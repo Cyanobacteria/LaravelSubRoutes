@@ -5,6 +5,8 @@ use App\Repositories\OauthClientRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Schema;
+
 
 class LaravelSubRoutes extends RouteServiceProvider{
 
@@ -19,8 +21,9 @@ class LaravelSubRoutes extends RouteServiceProvider{
     {
         foreach ($this->getSubRouteFileList(['subRouteFolderName'=>$params['subRouteFolderName']]) as $fileCompletePath) {
             $fileName = $this->getFileNameForSubRoutes($fileCompletePath);
-            $oauthClient = OauthClientRepository::getOneByMerchantCode(['merchant_code'=>$fileName]);
-            $middlewares = $this->getSubRouteMiddleware($oauthClient);
+
+            $middlewares = $this->getSubRouteMiddleware($fileName);
+
             $route = Route::prefix($fileName);
 
             $route = $this->addSubRouteMiddleware([
@@ -41,8 +44,10 @@ class LaravelSubRoutes extends RouteServiceProvider{
         return $route;
     }
 
-    private function getSubRouteMiddleware($oauthClient)
+    private function getSubRouteMiddleware($fileName)
     {
+        if(empty(Schema::hasTable('oauth_clients'))) return null;
+        $oauthClient = OauthClientRepository::getOneByMerchantCode(['merchant_code'=>$fileName]);
         $rules = $this->getSubRouteMiddlewareRules();//get middleware rule
         if (empty($oauthClient)) return null; //if null return null
         if (empty($rules[$oauthClient->id])) return null; //if null return null
