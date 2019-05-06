@@ -10,7 +10,7 @@
   },
   "autoload": {
     "psr-4": {
-      "App\\James\\": "src\\"
+      "Cyanobacteria\\Route\\": "src\\"
     }
   }
 }

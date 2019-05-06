@@ -1,6 +1,6 @@
 <?php
 
-namespace App\James;
+namespace Cyanobacteria\Route;
 use App\Repositories\OauthClientRepository;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
