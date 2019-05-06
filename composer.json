@@ -1,0 +1,14 @@
+{
+  "name": "Cyanobacteria/LaravelSubRoutes",
+  "type": "library",
+  "description": "a plugin to split Route files",
+  "keywords": ["LaravelSubRoutes"],
+  "license": "MIT",
+  "homepage": "https://github.com/Cyanobacteria/LaravelSubRoutes",
+  "require": {
+    "php": ">=7.1.0"
+  },
+  "autoload": {
+    "classmap": ["LaravelSubRoutes.php"]
+  }
+}
