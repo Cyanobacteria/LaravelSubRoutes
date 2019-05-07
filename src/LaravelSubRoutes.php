@@ -159,7 +159,7 @@ class LaravelSubRoutes extends RouteServiceProvider
     private function addPrefix($fileName)
     {
         if ($this->noPrefix) return null;
-        $prefix = (!empty($this->prefix)) ? "{$this->preifx}/$fileName" : $fileName;
+        $prefix = (!empty($this->prefix)) ? "{$this->prefix}/$fileName" : $fileName;
         return Route::prefix($prefix);
 
     }
