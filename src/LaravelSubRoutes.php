@@ -22,10 +22,9 @@ class LaravelSubRoutes extends RouteServiceProvider
     private $ignoreList;
     private $noPrefix = false;
 
-    public function __construct($params)
+    public function __construct()
     {
-        $this->middlewareType = $params['middlewareType'];
-        $this->setMiddlewareType();
+
     }
 
     public function setNoPrefixTrue()
@@ -92,31 +91,7 @@ class LaravelSubRoutes extends RouteServiceProvider
         return true;
     }
 
-    private function setMiddlewareType()
-    {
 
-        switch ($this->middlewareType) {
-            case 'funcity':
-                $tableEmpty = empty(Schema::hasTable('oauth_clients'));
-                if ($tableEmpty) {
-                    $this->oauthClients = null;
-                } else {
-                    $ary = OauthClientRepository::getAll();
-                    $newAry = array();
-                    foreach ($ary as $k => $v) $newAry[$v->merchant_code] = $v;
-                    $this->oauthClients = (empty($newAry)) ? null : $newAry;
-                }
-                $this->middlewareRules = $this->getSubRouteMiddlewareRules();//get middleware rule
-                break;
-
-            case 'default':
-
-                break;
-
-            //must has value
-
-        }
-    }
 
 //    private $configPath;
 
@@ -138,13 +113,13 @@ class LaravelSubRoutes extends RouteServiceProvider
         foreach ($this->getSubRouteFileList(['subRouteFolderName' => $this->subRouteFolderName]) as $fileCompletePath) {
             $fileName = $this->getFileNameForSubRoutes($fileCompletePath);
 
-            $middlewares = $this->getSubRouteMiddleware($fileName);
+            //$middlewares = $this->getSubRouteMiddleware($fileName);
 
             $route = $this->addPrefix($fileName);
 
             $route = $this->addSubRouteMiddleware([
                 'route' => $route,
-                'middlewares' => $middlewares
+                'middlewares' => $this->middlewares
             ]);
             if (empty($route)) {
                 Route::namespace($this->namespace)->group($fileCompletePath);
@@ -177,36 +152,36 @@ class LaravelSubRoutes extends RouteServiceProvider
 //    private $middlewareRules;
 
 //    private $middlewares;
-    private function getSubRouteMiddleware($fileName)
-    {
-        /*
-         * 需要兩種實現
-         * 1.自己指定
-         * 2.根據設定還有db
-         */
-        $fromConfig = !$this->anyEmpty([
-            $this->middlewareRules,
-            $this->middlewareType,
-            $this->oauthClients,
-        ]);
-        $set = !empty($this->middlewares);
-        $noMiddleware = (empty($fromConfig) and empty($set)) ? true : false;
-        $tableEmpty = empty(Schema::hasTable('oauth_clients'));
-        if ($noMiddleware) {
-            return null;
-        } elseif ($tableEmpty and !$set) {
-            return null;
-        } elseif ($fromConfig) {
-            $rules = $this->getSubRouteMiddlewareRules();//get middleware rule
-            if (empty($this->oauthClients)) return null; //if null return null
-            $oauthClientId=$this->oauthClients[$fileName];
-            if (empty($rules[$oauthClientId])) return null; //if null return null
-            return $rules[$oauthClientId]; //return middlewares
-        } elseif ($set) {
-            return $set;
-        }
-
-    }
+//    private function getSubRouteMiddleware($fileName)
+//    {
+//        /*
+//         * 需要兩種實現
+//         * 1.自己指定
+//         * 2.根據設定還有db
+//         */
+//        $fromConfig = !$this->anyEmpty([
+//            $this->middlewareRules,
+//            $this->middlewareType,
+//            $this->oauthClients,
+//        ]);
+//        $set = !empty($this->middlewares);
+//        $noMiddleware = (empty($fromConfig) and empty($set)) ? true : false;
+//        $tableEmpty = empty(Schema::hasTable('oauth_clients'));
+//        if ($noMiddleware) {
+//            return null;
+//        } elseif ($tableEmpty and !$set) {
+//            return null;
+//        } elseif ($fromConfig) {
+//            $rules = $this->getSubRouteMiddlewareRules();//get middleware rule
+//            if (empty($this->oauthClients)) return null; //if null return null
+//            $oauthClientId=$this->oauthClients[$fileName];
+//            if (empty($rules[$oauthClientId])) return null; //if null return null
+//            return $rules[$oauthClientId]; //return middlewares
+//        } elseif ($set) {
+//            return $set;
+//        }
+//
+//    }
 
     private function getSubRouteMiddlewareRules()
     {
